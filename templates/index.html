@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Exoplanet Direct Imaging Contrast Calculator</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Exoplanet Direct Imaging Contrast Calculator</h1>
+        
+        {% if error %}
+        <div class="error">
+            <p>Error: {{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            <!-- Planet Parameters -->
+            <div class="form-section">
+                <h2>Planet Parameters</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="a">Semi-major axis (AU):</label>
+                        <input type="number" step="0.01" id="a" name="a" value="{{ planet_params.a }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="e">Eccentricity:</label>
+                        <input type="number" step="0.01" id="e" name="e" value="{{ planet_params.e }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="per">Period (days):</label>
+                        <input type="number" step="1" id="per" name="per" value="{{ planet_params.per }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tp">Time of periastron:</label>
+                        <input type="number" step="0.1" id="tp" name="tp" value="{{ planet_params.tp }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="I_deg">Inclination (deg):</label>
+                        <input type="number" step="0.1" id="I_deg" name="I_deg" value="{{ planet_params.I_deg }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="omega_deg">Argument of periastron (deg):</label>
+                        <input type="number" step="0.1" id="omega_deg" name="omega_deg" value="{{ planet_params.omega_deg }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="M">Mass (Jupiter masses):</label>
+                        <input type="number" step="0.01" id="M" name="M" value="{{ planet_params.M }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="R_p">Radius (Jupiter radii, 0 for auto):</label>
+                        <input type="number" step="0.01" id="R_p" name="R_p" value="{{ planet_params.R_p }}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Star Parameters -->
+            <div class="form-section">
+                <h2>Star Parameters</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="M_s">Mass (Solar masses):</label>
+                        <input type="number" step="0.01" id="M_s" name="M_s" value="{{ star_params.M_s }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="R_s">Radius (Solar radii):</label>
+                        <input type="number" step="0.01" id="R_s" name="R_s" value="{{ star_params.R_s }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="T">Temperature (K):</label>
+                        <input type="number" step="1" id="T" name="T" value="{{ star_params.T }}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Observation Parameters -->
+            <div class="form-section">
+                <h2>Observation Parameters</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="wavelength">Wavelength (μm):</label>
+                        <input type="number" step="0.1" id="wavelength" name="wavelength" value="{{ wavelength }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="distance">Distance (pc):</label>
+                        <input type="number" step="1" id="distance" name="distance" value="{{ distance }}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit">Calculate Contrast</button>
+        </form>
+        
+        {% if results %}
+        <div class="results">
+            <h2>Numerical Results</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>Thermal Contrast (C<sub>thermal</sub>)</h3>
+                    <p>Mean: {{ "%.2e"|format(results.thermal_mean) }}</p>
+                    <p>Range: {{ "%.2e"|format(results.thermal_min) }} to {{ "%.2e"|format(results.thermal_max) }}</p>
+                </div>
+                <div class="result-card">
+                    <h3>Reflection Contrast (C<sub>refl</sub>)</h3>
+                    <p>Mean: {{ "%.2e"|format(results.refl_mean) }}</p>
+                    <p>Range: {{ "%.2e"|format(results.refl_min) }} to {{ "%.2e"|format(results.refl_max) }}</p>
+                </div>
+                <div class="result-card">
+                    <h3>Total Contrast (C<sub>total</sub>)</h3>
+                    <p>Mean: {{ "%.2e"|format(results.total_mean) }}</p>
+                    <p>Range: {{ "%.2e"|format(results.total_min) }} to {{ "%.2e"|format(results.total_max) }}</p>
+                </div>
+                <div class="result-card">
+                    <h3>Planet Properties</h3>
+                    <p>Albedo (A<sub>g</sub>): {{ "%.3f"|format(results.albedo) }}</p>
+                    <p>Temperature: {{ "%.1f"|format(results.temperature) }} K</p>
+                    <p>Radius: {{ "%.3f"|format(results.radius) }} R<sub>J</sub></p>
+                    <p> Projected separation: {{ "%.3f"|format(results.separation) }} AU<p>
+                    <p>Projected angular separation: {{ "%.3f"|format(results.angular) }} mas</p>
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
